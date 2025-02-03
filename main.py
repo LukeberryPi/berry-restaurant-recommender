@@ -67,34 +67,28 @@ def explore_df(df):
     plt.savefig("exploratory_analysis/gender_cuisine_preference.png")
     plt.clf()
 
-    # calculate average ratio per rating
-    ratings_order = ['dislike', 'satisfactory', 'very_good']
+    # calculate average price / budget ratio per rating
+    ratings_order = ['dislike', 'satisfactory', 'very_good', 'excellent']
     avg_ratio = df.groupby('rating')['price_over_budget'].mean().reindex(ratings_order)
 
     plt.figure(figsize=(8,4))
-    avg_ratio.plot.barh(color=['#ff6666', '#ffcc66', '#66cc66'], edgecolor='black')
+    avg_ratio.plot.barh(color=["#CD5C5C", "#E0D26D", "#D8A26B", "#6B8E23"], edgecolor='black')
 
-    # add critical info
     plt.axvline(1.0, color='red', linestyle='--', linewidth=1)
     plt.text(1.05, 0.5, 'budget limit', color='black', va='center')
 
-    # dumb it down
     plt.title('ratings by price/budget ratio')
     plt.xlabel('avg. price/budget ratio')
     plt.ylabel('')
     plt.xticks([0, 0.5, 1.0, 1.5])
-    plt.yticks(ticks=range(3), labels=['min_rating', 'mid_rating', 'max_rating'])
+    plt.yticks(ticks=range(4), labels=['dislike', 'satisfactory', 'very_good', 'excellent'])
 
-    # add raw numbers
     for i, v in enumerate(avg_ratio):
         plt.text(v + 0.05, i, f"{v:.2f}", va='center')
 
     plt.tight_layout()
     plt.savefig("exploratory_analysis/price_budget_ratio_preference.png")
     plt.clf()
-
-
-    # age rating by cuisine type
 
 
 def preprocess(df):
