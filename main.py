@@ -32,12 +32,43 @@ def cleanse_df(df):
     return df
 
 def explore_df(df):
-    # correlations...
     if not os.path.exists("exploratory_analysis"):
         os.makedirs("exploratory_analysis")
 
-    # budget / price ratio and how it affects rating
     # male vs female ratings by cuisine tyope
+    df['max_rating'] = df['rating'] == 'excellent'
+    df['min_rating'] = df['rating'] == 'dislike'
+
+    gender_analysis = (
+        df
+        .groupby(['gender', 'cuisine_type'])
+        .agg({'max_rating': 'mean', 'min_rating': 'mean'})
+        .mul(100)
+        .reset_index()
+    )
+
+    g = sns.FacetGrid(gender_analysis, col='cuisine_type', col_wrap=3, height=2)
+    g.map_dataframe(
+        # seaborn breaks if i remove **kwargs, so it has to remain
+        lambda data, **kwargs: sns.barplot(
+            x='gender',
+            y='value',
+            hue='variable',
+            data=pd.melt(data, id_vars=['gender'], value_vars=['max_rating', 'min_rating'])
+        )
+    )
+
+    g.set_titles("{col_name}")
+    g.set_axis_labels("", "% of ratings")
+    g.add_legend(title="rating type")
+    plt.subplots_adjust(top=0.9)
+    g.figure.suptitle('extreme ratings by gender and cuisine')
+    plt.savefig("exploratory_analysis/gender_cuisine_preference.png")
+    plt.clf()
+
+    # budget / price ratio and how it affects rating
+
+
     # age rating by cuisine type
 
 

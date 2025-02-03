@@ -20,5 +20,5 @@ A ~16k row `restaurants.csv` file with the following shape:
 </dataset>
 
 <technologies>
-This project uses Python, uv, pandas, matplotlib, and scikit-learn.
+This project uses Python, uv, pandas, matplotlib, seaborn, and scikit-learn.
 </technologies>
