@@ -63,10 +63,35 @@ def explore_df(df):
     g.add_legend(title="rating type")
     plt.subplots_adjust(top=0.9)
     g.figure.suptitle('extreme ratings by gender and cuisine')
+    plt.tight_layout()
     plt.savefig("exploratory_analysis/gender_cuisine_preference.png")
     plt.clf()
 
-    # budget / price ratio and how it affects rating
+    # calculate average ratio per rating
+    ratings_order = ['dislike', 'satisfactory', 'very_good']
+    avg_ratio = df.groupby('rating')['price_over_budget'].mean().reindex(ratings_order)
+
+    plt.figure(figsize=(8,4))
+    avg_ratio.plot.barh(color=['#ff6666', '#ffcc66', '#66cc66'], edgecolor='black')
+
+    # add critical info
+    plt.axvline(1.0, color='red', linestyle='--', linewidth=1)
+    plt.text(1.05, 0.5, 'budget limit', color='black', va='center')
+
+    # dumb it down
+    plt.title('ratings by price/budget ratio')
+    plt.xlabel('avg. price/budget ratio')
+    plt.ylabel('')
+    plt.xticks([0, 0.5, 1.0, 1.5])
+    plt.yticks(ticks=range(3), labels=['min_rating', 'mid_rating', 'max_rating'])
+
+    # add raw numbers
+    for i, v in enumerate(avg_ratio):
+        plt.text(v + 0.05, i, f"{v:.2f}", va='center')
+
+    plt.tight_layout()
+    plt.savefig("exploratory_analysis/price_budget_ratio_preference.png")
+    plt.clf()
 
 
     # age rating by cuisine type

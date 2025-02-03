@@ -1,0 +1,1 @@
+I had the hypothesis that if a given customer's budget was lower than the price of the chosen restaurant, that would impact the ratings negatively. However, by observing the graph "price_budget_ratio_preference.png" The average price over budget ratio of max ratings is very similar to min_ratings, showing that this hypothesis is not supported.
