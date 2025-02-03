@@ -31,7 +31,7 @@ def cleanse_df(df):
 
     return df
 
-def generate_exploratory_analysis(df):
+def explore_df(df):
     if not os.path.exists("exploratory_analysis"):
         os.makedirs("exploratory_analysis")
 
@@ -68,11 +68,7 @@ def generate_exploratory_analysis(df):
     plt.clf()
 
     # calculate average price / budget ratio per rating
-    ratings_order = df['rating'].unique().tolist()
-    ratings_order.sort(key=['dislike', 'satisfactory', 'very_good', 'excellent'].index)
-    assert ratings_order == df['rating'].unique().tolist()
-
-    # calculate average price / budget ratio per rating
+    ratings_order = ['dislike', 'satisfactory', 'very_good', 'excellent']
     avg_ratio = df.groupby('rating')['price_over_budget'].mean().reindex(ratings_order)
 
     plt.figure(figsize=(8,4))
@@ -91,7 +87,7 @@ def generate_exploratory_analysis(df):
         plt.text(v + 0.05, i, f"{v:.2f}", va='center')
 
     plt.tight_layout()
-    plt.savefig("exploratory_analysis/price_budget_ratio_preference2.png")
+    plt.savefig("exploratory_analysis/price_budget_ratio_preference.png")
     plt.clf()
 
 
@@ -128,7 +124,7 @@ def main():
     df = create_df("restaurants.csv")
     clean_df = cleanse_df(df)
     preprocessed_df = preprocess(clean_df)
-    generate_exploratory_analysis(clean_df)
+    explore_df(clean_df)
     print(preprocessed_df.head(100))
     print("\n\n")
     for col in df:
