@@ -2,6 +2,8 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import train_test_split
 
 df = pd.read_csv("restaurants.csv")
 
@@ -114,12 +116,9 @@ def preprocess(df):
 
     return df
 
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.model_selection import train_test_split
-
 def train_model(x, y):
-    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    model = GradientBoostingClassifier(random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=8)
+    model = GradientBoostingClassifier(random_state=8)
     model.fit(x_train, y_train)
     print("test accuracy:", model.score(x_test, y_test))
     return model
@@ -129,19 +128,39 @@ def predict_new(new_data, model):
     print("predictions:", predictions)
     return predictions
 
+def prepare_features(df):
+    numeric = df[['average_budget', 'average_price', 'price_over_budget']]
+    categorical = pd.get_dummies(df[['gender', 'age_range', 'budget_range', 'price_range', 'cuisine_type']], drop_first=True)
+    features = pd.concat([numeric, categorical], axis=1)
+    target = df['rating_ordinal']
+    return features, target
+
+def prepare_sample_features(sample_df, training_columns):
+    numeric = sample_df[['average_budget', 'average_price', 'price_over_budget']]
+    categorical = pd.get_dummies(sample_df[['gender', 'age_range', 'budget_range', 'price_range', 'cuisine_type']], drop_first=True)
+    features = pd.concat([numeric, categorical], axis=1)
+    features = features.reindex(columns=training_columns, fill_value=0)
+    return features
+
 def main():
     clean_df = cleanse_df(df)
     preprocessed_df = preprocess(clean_df)
     explore_df(clean_df)
-    features = preprocessed_df[['average_budget', 'average_price', 'price_over_budget']]
-    target = preprocessed_df['rating_ordinal']
+    features, target = prepare_features(preprocessed_df)
     model = train_model(features, target)
-    new_data = pd.DataFrame({
-        'average_budget': [20, 40],
-        'average_price': [30, 50],
-        'price_over_budget': [1.5, 1.25]
+
+    sample_df = pd.DataFrame({
+        'gender': ['female', 'male'],
+        'age_range': ['35_49', '20_34'],
+        'budget_range': ['10_to_20', '20_to_30'],
+        'price_range': ['20_to_30', '30_to_50'],
+        'cuisine_type': ['deli/sandwiches/fast_food', 'asian'],
+        'average_budget': [15, 25],
+        'average_price': [25, 40],
+        'price_over_budget': [1.66666667, 1.6]
     })
-    predict_new(new_data, model)
+    sample_features = prepare_sample_features(sample_df, features.columns)
+    predict_new(sample_features, model)
     return model
 
 if __name__ == "__main__":
