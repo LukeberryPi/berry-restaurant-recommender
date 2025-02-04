@@ -3,8 +3,14 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def create_df(file_path):
-    return pd.read_csv(file_path)
+df = pd.read_csv("restaurants.csv")
+
+ordinal_rating_map = {
+    'dislike': 0,
+    'satisfactory': 1,
+    'very_good': 2,
+    'excellent': 3
+}
 
 def cleanse_df(df):
     has_na_values = df.isna().any(axis=None)
@@ -103,33 +109,40 @@ def preprocess(df):
     df['average_budget'] = df['budget_range'].map(pricing_average_map).map(float)
     df['average_price'] = df['price_range'].map(pricing_average_map).map(float)
 
-    ordinal_rating_map = {
-        'dislike': 0,
-        'satisfactory': 1,
-        'very_good': 2,
-        'excellent': 3
-    }
-
     df['rating_ordinal'] = df['rating'].map(ordinal_rating_map)
-
     df['price_over_budget'] = df['average_price'] / df['average_budget'].map(float)
 
     return df
 
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.model_selection import train_test_split
+
 def train_model(x, y):
-    #
-    pass
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    model = GradientBoostingClassifier(random_state=42)
+    model.fit(x_train, y_train)
+    print("test accuracy:", model.score(x_test, y_test))
+    return model
+
+def predict_new(new_data, model):
+    predictions = model.predict(new_data)
+    print("predictions:", predictions)
+    return predictions
 
 def main():
-    df = create_df("restaurants.csv")
     clean_df = cleanse_df(df)
     preprocessed_df = preprocess(clean_df)
     explore_df(clean_df)
-    print(preprocessed_df.head(100))
-    print("\n\n")
-    for col in df:
-        print(col, df[col].unique())
-
+    features = preprocessed_df[['average_budget', 'average_price', 'price_over_budget']]
+    target = preprocessed_df['rating_ordinal']
+    model = train_model(features, target)
+    new_data = pd.DataFrame({
+        'average_budget': [20, 40],
+        'average_price': [30, 50],
+        'price_over_budget': [1.5, 1.25]
+    })
+    predict_new(new_data, model)
+    return model
 
 if __name__ == "__main__":
     main()
