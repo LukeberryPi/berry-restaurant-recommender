@@ -56,6 +56,7 @@ def explore_df(df):
 
     g = sns.FacetGrid(gender_analysis, col='cuisine_type', col_wrap=3, height=3, aspect=1)
     g.map_dataframe(
+        # seaborn breaks if i remove **kwargs, so it has to remain
         lambda data, **kwargs: sns.barplot(
             x='gender',
             y='value',
