@@ -43,36 +43,35 @@ def explore_df(df):
     if not os.path.exists("exploratory_analysis"):
         os.makedirs("exploratory_analysis")
 
-    # male vs female ratings by cuisine tyope
+    # male vs female ratings by cuisine type
     df['max_rating'] = df['rating'] == 'excellent'
     df['min_rating'] = df['rating'] == 'dislike'
 
     gender_analysis = (
-        df
-        .groupby(['gender', 'cuisine_type'])
+        df.groupby(['gender', 'cuisine_type'])
         .agg({'max_rating': 'mean', 'min_rating': 'mean'})
         .mul(100)
         .reset_index()
     )
 
-    g = sns.FacetGrid(gender_analysis, col='cuisine_type', col_wrap=3, height=2)
+    g = sns.FacetGrid(gender_analysis, col='cuisine_type', col_wrap=3, height=3, aspect=1)
     g.map_dataframe(
-        # seaborn breaks if i remove **kwargs, so it has to remain
         lambda data, **kwargs: sns.barplot(
             x='gender',
             y='value',
             hue='variable',
-            data=pd.melt(data, id_vars=['gender'], value_vars=['max_rating', 'min_rating'])
+            data=pd.melt(data, id_vars=['gender'], value_vars=['max_rating', 'min_rating']),
+            dodge=True
         )
     )
 
-    g.set_titles("{col_name}")
-    g.set_axis_labels("", "% of ratings")
-    g.add_legend(title="rating type")
-    plt.subplots_adjust(top=0.9)
-    g.figure.suptitle('extreme ratings by gender and cuisine')
-    plt.tight_layout()
-    plt.savefig("exploratory_analysis/gender_cuisine_preference.png")
+    g.set_titles("{col_name}", size=10)
+    g.set_axis_labels("", "% of ratings", size=10)
+    g.add_legend(title="rating type", loc="center right", bbox_to_anchor=(1.25, 0.5))
+
+    plt.subplots_adjust(top=0.88, wspace=0.3, hspace=0.4, right=0.8)
+    g.figure.suptitle('extreme ratings by gender and cuisine', y=0.98, fontsize=14)
+    plt.savefig("exploratory_analysis/gender_cuisine_preference.png", bbox_inches='tight')
     plt.clf()
 
     # calculate average price / budget ratio per rating
