@@ -23,16 +23,22 @@ A ~16k row `restaurants.csv` file with the following shape:
 The unique values for each column are:
 
 | age          | '35_49', '50_64', '20_34', 'under_19', '65_and_over'
+
 | gender       | 'female', 'male'
+
 | budget       | 'under_20', '20_to_30', 'over_50', '30_to_50'
+
 | price        | '20_to_30', '30_to_50', 'under_20', 'over_50'
+
 | cuisine_type | 'Latin American/Mexican', 'American', 'Asian', 'Bars/Pubs', 'Deli/Sandwiches/Fast Food', 'Continental', 'African', 'Breakfast/Brunch', 'Seafood', 'Mediterranean', 'Vegetarian/vegan', 'Cafe'
+
 | rating       | 'very good', 'dislike', 'satisfactory', 'excellent'
 
 
 ## Techbologies
 
 This project uses Python, uv, pandas, matplotlib, seaborn, and scikit-learn.
+
 
 ## Running locally
 
